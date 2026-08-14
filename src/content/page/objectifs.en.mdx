@@ -1,0 +1,50 @@
+<p class="lead">
+    Ce qu'Endro cherche à accomplir, et comment c'est pensé sous le capot.
+</p>
+
+<section>
+    <h2>L'objectif</h2>
+    <p>
+        Endro à pour objectif d'orchestrer une légion de machines depuis un plan de masse.
+        Ou bien de changer de vlan
+    </p>
+</section>
+
+<section>
+    <h2>Les 5 sections de la base de données</h2>
+
+    <h3>la cartographie</h3>
+    <p>Dans la cartographie, on retrouve 5 tables principales:</p>
+    <ul>
+        <li>les batiments</li>
+        <li>les étages</li>
+        <li>les secteurs</li>
+        <li>les pools de bureau</li>
+        <li>les bureaux</li>
+    </ul>
+    <p>A celles ci s'ajoute aussi une table qui permet de localiser les prises ethernet mural</p>
+
+    <h3>les gens</h3>
+    <p>
+        Dans cette catégorie de table, on retrouve, biens évidément une table d'individu.
+        Mais aussi une table de communauté/cohorte, qui permette dwe regrouper les gens
+        Ainsi qu'une table d'engagement. L'engagement, permet d'identifier une personne à un moment de sa vie, si son contrat change ou évolue, c'est un nouvel engagement. Ou bien, si nous somme dans le cas d'un étudiant, chaque nouvel année est un nouvel engagement. Cela permet de garder une trace des différentes communauté dans lesquelles la personne à été membre.
+    </p>
+
+    <h3>le materiel</h3>
+    <p>
+        On retrouve ici les ordinateurs, qui ont un id unique. Les composants et les accesoires qui se comporte comme des ressources. Les composant sont installé sur un ordinateur, là où un accesoire est assigné à un bureau.
+        Et on y trouvera égelement une table pour les switchs, routeurs et serveurs
+    </p>
+
+    <h3>les operations</h3>
+    <p></p>
+
+    <h3>les relations</h3>
+    <p></p>
+
+    <h3>les à côté</h3>
+    <p>
+        On aura également une table pour des variable d'environement global au parc. qui donneronts des chemins de dossiers, de fichiers, etc
+    </p>
+</section>
