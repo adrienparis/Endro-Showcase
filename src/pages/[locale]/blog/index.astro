@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const locales = ['fr', 'en'];
+
+  return locales.map(locale => ({
+    params: { locale },
+  }));
+}
+
+const { locale } = Astro.params;
+---
