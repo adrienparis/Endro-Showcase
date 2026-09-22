@@ -3,11 +3,15 @@ import { getCollection, render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
+  const locales = ['fr', 'en'];
   const posts = await getCollection('blog');
-  return posts.map(post => ({
-    params: { id: post.id },
-    props: { post },
-  }));
+
+  return locales.flatMap(locale =>
+    posts.map(post => ({
+      params: { id: post.id, locale},
+      props: { post },
+    }))
+  );
 }
 
 const { post } = Astro.props;
