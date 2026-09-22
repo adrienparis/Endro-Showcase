@@ -17,4 +17,6 @@ export default defineConfig({
   },
 
   integrations: [mdx()],
+  site: 'https://adrienparis.github.io',
+  base: '//Endro-Showcase'
 });
