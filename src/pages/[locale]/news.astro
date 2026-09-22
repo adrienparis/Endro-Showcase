@@ -1,0 +1,207 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const posts = await getCollection('blog');
+
+posts.sort((a, b) => {
+	const dateA = new Date(a.data.date || 0).getTime();
+	const dateB = new Date(b.data.date || 0).getTime();
+	return dateB - dateA;
+});
+
+const items = await Promise.all(
+	posts.map(async post => ({
+		post,
+		Content: (await render(post)).Content,
+	}))
+);
+
+// TODO :
+// TEMP : avoid error
+export async function getStaticPaths() {
+  const items = await getCollection('page');
+
+  return items.map(item => ({
+    params: { locale: 'fr', slug: item.id },
+    props: { item },
+  }));
+}
+
+
+---
+
+<Layout title="Actualités - Endro" description="Toutes les actualités du projet Endro.">
+	<style>
+		h1 {
+			font-weight: 800;
+			color: var(--color-accent);
+			margin-bottom: 1.5rem;
+		}
+
+		.toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.search {
+			flex: 1;
+			min-width: 200px;
+			padding: 0.6rem 1rem;
+			border: 1px solid var(--color-border);
+			border-radius: 9999px;
+			font: inherit;
+			background: var(--color-surface);
+		}
+
+		.toggle-all {
+			background: var(--color-accent);
+			color: white;
+			font-weight: 700;
+			border: none;
+			padding: 0.6rem 1.3rem;
+			border-radius: 9999px;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+
+		.toggle-all:hover {
+			background: var(--color-accent-dark);
+		}
+
+		.news-item {
+			background: var(--color-surface);
+			border-radius: 12px;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			margin-bottom: 1rem;
+			padding: 0 1.25rem;
+		}
+
+		.news-item summary {
+			list-style: none;
+			cursor: pointer;
+			padding: 1.25rem 0;
+			display: flex;
+			flex-direction: column;
+			gap: 0.25rem;
+		}
+
+		.news-item summary::-webkit-details-marker {
+			display: none;
+		}
+
+		.news-item summary .title-row {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 1rem;
+		}
+
+		.news-item summary h2 {
+			margin: 0;
+			font-size: 1.15rem;
+			color: #111827;
+		}
+
+		.news-item summary .chevron {
+			flex-shrink: 0;
+			color: var(--color-accent);
+			font-weight: 700;
+			transition: transform 0.15s ease;
+		}
+
+		.news-item[open] summary .chevron {
+			transform: rotate(90deg);
+		}
+
+		.news-item .date {
+			color: var(--color-muted);
+			font-size: 0.85em;
+		}
+
+		.news-item .description {
+			color: var(--color-text);
+			margin: 0.25rem 0 0;
+		}
+
+		.news-item .body {
+			border-top: 1px solid var(--color-border);
+			padding: 1.25rem 0;
+		}
+
+		.empty, .no-results {
+			color: var(--color-muted);
+			text-align: center;
+			padding: 2rem 0;
+			display: none;
+		}
+	</style>
+
+	<div class="container">
+		<h1>Actualités</h1>
+
+		{items.length > 0 && (
+			<div class="toolbar">
+				<input type="search" class="search" id="search" placeholder="Rechercher une actualité..." aria-label="Rechercher une actualité" />
+				<button type="button" class="toggle-all" id="toggle-all">Tout déplier</button>
+			</div>
+		)}
+
+		<div id="news-list">
+			{items.map(({ post, Content }) => (
+				<details class="news-item" data-title={post.data.title.toLowerCase()} data-description={(post.data.description || '').toLowerCase()}>
+					<summary>
+						<div class="title-row">
+							<h2>{post.data.title}</h2>
+							<span class="chevron">▶</span>
+						</div>
+						{post.data.date && <span class="date">Publié le {post.data.date}</span>}
+						{post.data.description && <p class="description">{post.data.description}</p>}
+					</summary>
+					<div class="body">
+						<Content />
+					</div>
+				</details>
+			))}
+		</div>
+
+		<p class="empty" style={items.length === 0 ? 'display: block;' : ''}>Pas encore d'actualité publiée.</p>
+		<p class="no-results" id="no-results">Aucune actualité ne correspond à ta recherche.</p>
+	</div>
+</Layout>
+
+<script>
+	const items = Array.from(document.querySelectorAll<HTMLDetailsElement>('.news-item'));
+	const toggleBtn = document.getElementById('toggle-all');
+	const searchInput = document.getElementById('search') as HTMLInputElement | null;
+	const noResults = document.getElementById('no-results');
+
+	let allExpanded = false;
+
+	toggleBtn?.addEventListener('click', () => {
+		allExpanded = !allExpanded;
+		for (const item of items) {
+			if (item.style.display !== 'none') item.open = allExpanded;
+		}
+		toggleBtn.textContent = allExpanded ? 'Tout replier' : 'Tout déplier';
+	});
+
+	searchInput?.addEventListener('input', () => {
+		const query = searchInput.value.trim().toLowerCase();
+		let visibleCount = 0;
+
+		for (const item of items) {
+			const title = item.dataset.title || '';
+			const description = item.dataset.description || '';
+			const matches = !query || title.includes(query) || description.includes(query);
+			item.style.display = matches ? '' : 'none';
+			if (matches) visibleCount++;
+		}
+
+		if (noResults) {
+			noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+		}
+	});
+</script>

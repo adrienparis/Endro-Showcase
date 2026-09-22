@@ -1,0 +1,93 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getLocalPage } from '../../utils/getLocalizedPage';
+
+export async function getStaticPaths() {
+	return getLocalPage("contribute");
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title="Contribuer - Endro" description="Comment participer au développement du projet Endro.">
+	<style>
+		h1 {
+			font-weight: 800;
+			color: var(--color-accent);
+			margin-bottom: 0.5rem;
+		}
+
+		.lead {
+			font-size: 1.15rem;
+			line-height: 1.7;
+			margin: 0 0 2.5rem;
+		}
+
+		section {
+			margin-top: 2.5rem;
+			padding-top: 2.5rem;
+			border-top: 1px solid var(--color-border);
+		}
+
+		section h2 {
+			color: var(--color-accent-text);
+			font-size: 1.4rem;
+			margin: 0 0 0.75rem;
+		}
+
+		section p {
+			margin: 0 0 1rem;
+		}
+
+		section p:last-child {
+			margin-bottom: 0;
+		}
+
+		.ways-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: grid;
+			gap: 0.75rem;
+		}
+
+		.ways-list li {
+			background: var(--color-surface);
+			border-radius: 8px;
+			padding: 0.9rem 1rem;
+			border: 1px solid var(--color-border);
+		}
+
+		.ways-list strong {
+			color: var(--color-accent-text);
+			display: block;
+			margin-bottom: 0.2rem;
+		}
+
+		.steps {
+			margin: 0;
+			padding-left: 1.25rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
+		}
+
+		.placeholder-link {
+			display: inline-block;
+			border: 1px solid var(--color-border);
+			color: var(--color-muted);
+			font-weight: 700;
+			padding: 0.5rem 1.1rem;
+			border-radius: 9999px;
+			cursor: not-allowed;
+		}
+	</style>
+
+	<div class="container">
+		<h1>Contribute</h1>
+
+		<Content />
+	</div>
+</Layout>

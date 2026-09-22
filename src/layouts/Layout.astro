@@ -1,0 +1,293 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const path = Astro.url.pathname;
+function isActive(base: string) {
+  return path === base || path.startsWith(`${base}/`);
+}
+
+const tabs = [
+  { href: '/fr/news', activeBase: '/news', label: 'News' },
+  { href: '/fr/roadmap/endro', activeBase: '/roadmap', label: 'Roadmap' },
+  { href: '/fr/objectifs', activeBase: '/objectifs', label: 'Objectifs' },
+  { href: '/fr/contribute', activeBase: '/contribute', label: 'Contribute' },
+  { href: '/fr/about', activeBase: '/about', label: 'About' },
+];
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet" />
+    <style is:global>
+      :root {
+        --color-bg: #def1d3;
+        --color-surface: #ffffff;
+        --color-text: #1f2937;
+        --color-muted: #6b7280;
+        --color-border: #e5e7eb;
+        --color-accent: #16a34a;
+        --color-accent-dark: #15803d;
+        --color-accent-text: #166534;
+        --color-link: #2563eb;
+        --font-display: 'Baloo 2', system-ui, sans-serif;
+        --header-height: 4rem;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        line-height: 1.6;
+        background: var(--color-bg);
+        color: var(--color-text);
+      }
+
+      /* Reusable reading-width wrapper. Pages that don't want a full-bleed
+         layout (like the landing hero) wrap their slot content in this. */
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem 3rem;
+      }
+
+      h1, h2, h3 {
+        font-family: var(--font-display);
+      }
+
+      h1 {
+        font-weight: 800;
+        color: var(--color-accent);
+        margin-bottom: 0.5rem;
+      }
+
+      a {
+        color: var(--color-link);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        cursor: zoom-in;
+      }
+
+      dialog#lightbox {
+        padding: 0;
+        border: none;
+        background: transparent;
+        max-width: 90vw;
+        max-height: 90vh;
+      }
+
+      dialog#lightbox::backdrop {
+        background: rgba(0, 0, 0, 0.85);
+      }
+
+      dialog#lightbox img {
+        max-width: 90vw;
+        max-height: 90vh;
+        cursor: zoom-out;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        height: var(--header-height);
+        background: var(--color-surface);
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .site-header-inner {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--color-text);
+        flex-shrink: 0;
+      }
+
+      .brand:hover {
+        text-decoration: none;
+      }
+
+      .logo-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--color-accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .site-tabs {
+        display: flex;
+        gap: 0.25rem;
+        overflow-x: auto;
+      }
+
+      .site-tabs a {
+        flex-shrink: 0;
+        padding: 0.5rem 0.9rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--color-muted);
+      }
+
+      .site-tabs a:hover {
+        color: var(--color-text);
+        background: var(--color-bg);
+        text-decoration: none;
+      }
+
+      .site-tabs a.active {
+        color: var(--color-accent-text);
+        background: #f0fdf4;
+      }
+
+      .lang-switch {
+        margin-left: auto;
+        flex-shrink: 0;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        /* color: var(--color-muted); */
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 9999px;
+        /* cursor: not-allowed; */
+      }
+
+      section {
+        max-width: 64rem;
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: 1px solid var(--color-border);
+      }
+
+      section:nth-of-type(odd) {
+        margin-right: auto;
+      }
+
+      section:nth-of-type(even) {
+        margin-left: auto;
+        text-align: right;
+      }
+
+      section h2 {
+        color: var(--color-accent-text);
+        font-size: 1.5rem;
+        margin: 0 0 0.75rem;
+      }
+
+      section p {
+        margin: 0 0 1rem;
+      }
+
+      section p:last-child {
+        margin-bottom: 0;
+      }
+
+      @media (max-width: 640px) {
+        section {
+          max-width: none;
+          text-align: left;
+        }
+      }
+      .astro-code {
+        border-radius: 15px;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="/fr" class="brand">
+          <span class="logo-mark">E</span>
+          <span>Endro</span>
+        </a>
+        <nav class="site-tabs">
+          {tabs.map(tab => (
+            <a href={tab.href} class={isActive(tab.activeBase) ? 'active' : ''}>{tab.label}</a>
+          ))}
+        </nav>
+        <button type="button" class="lang-switch">FR</button>
+      </div>
+    </header>
+
+    <slot />
+
+    <dialog id="lightbox">
+      <img id="lightbox-img" src="" alt="" />
+    </dialog>
+
+    <script>
+      const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+      const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+
+      if (dialog && lightboxImg) {
+        document.addEventListener('click', (e) => {
+          const target = e.target;
+          if (target instanceof HTMLImageElement && target !== lightboxImg) {
+            lightboxImg.src = target.currentSrc || target.src;
+            lightboxImg.alt = target.alt;
+            dialog.showModal();
+          }
+        });
+
+        dialog.addEventListener('click', (e) => {
+          const rect = dialog.getBoundingClientRect();
+          const insideRect =
+            e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+          if (!insideRect || e.target === lightboxImg) {
+            dialog.close();
+          }
+        });
+
+        dialog.addEventListener('close', () => {
+          lightboxImg.src = '';
+        });
+      }
+    </script>
+  </body>
+</html>

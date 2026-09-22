@@ -1,0 +1,66 @@
+---
+interface Props {
+  progress: number;
+  size?: 'lg' | 'sm';
+  holeColor?: string;
+}
+
+const { progress, size = 'sm', holeColor = '#f3f4f6' } = Astro.props;
+const isDone = progress >= 100;
+---
+
+<span
+  class={`status-circle ${size} ${isDone ? 'done' : progress > 0 ? 'in-progress' : 'planned'}`}
+  style={`--progress: ${progress}; --hole-color: ${holeColor};`}
+>
+  {isDone && <span class="check">✓</span>}
+</span>
+
+<style>
+  .status-circle {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: conic-gradient(var(--color-accent) calc(var(--progress) * 1%), #d1d5db 0);
+  }
+
+  .status-circle.lg {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  .status-circle.sm {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .status-circle::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--hole-color);
+  }
+
+  .status-circle.sm::before {
+    inset: 2px;
+  }
+
+  .check {
+    position: relative;
+    color: var(--color-accent);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .status-circle.lg .check {
+    font-size: 1.3rem;
+  }
+
+  .status-circle.sm .check {
+    font-size: 0.75rem;
+  }
+</style>

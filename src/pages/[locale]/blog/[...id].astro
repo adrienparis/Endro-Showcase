@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={`${post.data.title} - Endro`} description={post.data.description}>
+  <style>
+    article {
+      background: var(--color-surface);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+    }
+    header { border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; margin-bottom: 2rem; }
+    .meta { color: var(--color-muted); font-size: 0.9em; }
+  </style>
+
+  <div class="container">
+    <p><a href="/">← Retour à l'accueil</a></p>
+
+    <article>
+      <header>
+        <h1>{post.data.title}</h1>
+        {post.data.date && <p class="meta">Publié le {post.data.date}</p>}
+      </header>
+
+      <main>
+        <Content />
+      </main>
+    </article>
+  </div>
+</Layout>

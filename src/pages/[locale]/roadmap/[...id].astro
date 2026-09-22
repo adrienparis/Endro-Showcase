@@ -1,0 +1,171 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import StatusCircle from '../../../components/StatusCircle.astro';
+
+export async function getStaticPaths() {
+  const steps = await getCollection('roadmap');
+  const stepsById = new Map(steps.map(s => [s.id, s]));
+
+  return steps.map(step => ({
+    params: { id: step.id.slice(0, -2), locale: step.id.slice(-2)},
+    props: { step, stepsById },
+  }));
+}
+
+const { step, stepsById } = Astro.props as {
+  step: CollectionEntry<'roadmap'>;
+  stepsById: Map<string, CollectionEntry<'roadmap'>>;
+};
+const { Content } = await render(step);
+---
+
+<Layout title={`${step.data.title} - Roadmap Endro`}>
+  <style>
+    h1 {
+      font-weight: 800;
+      color: var(--color-accent);
+      font-size: 2.25rem;
+      margin: 0 0 2rem;
+    }
+
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .step-item {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .step-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .step-item::before {
+      content: '';
+      position: absolute;
+      left: 1.4rem;
+      top: 2.8rem;
+      bottom: 0;
+      width: 6px;
+      background: linear-gradient(to bottom, var(--color-accent) var(--bar-fill, 0%), #d1d5db var(--bar-fill, 0%));
+      transform: translateX(-50%);
+    }
+
+    .step-item:last-child::before {
+      display: none;
+    }
+
+    .step-body {
+      flex: 1;
+      padding-top: 0.3rem;
+    }
+
+    .step-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--color-accent-text);
+    }
+
+    a.step-title:hover {
+      text-decoration: underline;
+    }
+
+    span.step-title {
+      color: var(--color-muted);
+    }
+
+    .sub-feature-list {
+      list-style: none;
+      margin: 0.75rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sub-feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sub-feature-list .name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    a.sub-feature-link:hover .name {
+      text-decoration: underline;
+    }
+
+    span.sub-feature-link .name {
+      color: var(--color-muted);
+    }
+
+    article {
+      margin-top: 2.5rem;
+      border-top: 2px solid var(--color-border);
+      padding-top: 1.5rem;
+      background: var(--color-surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+  </style>
+
+  <div class="container">
+    <h1>{step.data.title}</h1>
+
+    {step.data.features && (
+      <ul class="timeline">
+        {step.data.features.map((feat, i) => {
+          const linked = stepsById.get(feat.id);
+          const subFeatures = linked?.data.features;
+          const next = step.data.features?.[i + 1];
+          const barFill = next ? next.progress : 100;
+          const TitleTag = linked ? 'a' : 'span';
+          return (
+            <li class="step-item" style={`--bar-fill: ${barFill}%`}>
+              <StatusCircle progress={feat.progress} size="lg" holeColor="#d4d4d4" />
+              <div class="step-body">
+                <TitleTag class="step-title" href={linked ? `/roadmap/${feat.id}` : undefined}>
+                  {feat.name}
+                </TitleTag>
+
+                {subFeatures && subFeatures.length > 0 && (
+                  <ul class="sub-feature-list">
+                    {subFeatures.map(sub => {
+                      const subLinked = stepsById.get(sub.id);
+                      const SubTag = subLinked ? 'a' : 'span';
+                      return (
+                        <li>
+                          <SubTag class="sub-feature-link" href={subLinked ? `/roadmap/${sub.id}` : undefined}>
+                            <StatusCircle progress={sub.progress} size="sm" holeColor="#d4d4d4" />
+                          </SubTag>
+                          <span class="name">{sub.name}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+
+    <article>
+      <Content />
+    </article>
+  </div>
+</Layout>

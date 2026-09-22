@@ -1,0 +1,67 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getLocalPage } from '../../utils/getLocalizedPage';
+
+export async function getStaticPaths() {
+	return getLocalPage("objectifs");
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title="Objectifs - Endro" description="Ce qu'Endro cherche à accomplir, et comment c'est pensé sous le capot.">
+	<style>
+		h1 {
+			font-weight: 800;
+			color: var(--color-accent);
+			margin-bottom: 0.5rem;
+		}
+
+		.lead {
+			font-size: 1.15rem;
+			line-height: 1.7;
+			margin: 0 0 2.5rem;
+		}
+
+		section {
+			margin-top: 2.5rem;
+			padding-top: 2.5rem;
+			border-top: 1px solid var(--color-border);
+		}
+
+		section h2 {
+			color: var(--color-accent-text);
+			font-size: 1.4rem;
+			margin: 0 0 0.75rem;
+		}
+
+		section h3 {
+			font-size: 1.1rem;
+			margin: 1.5rem 0 0.5rem;
+		}
+
+		section h3:first-of-type {
+			margin-top: 0.5rem;
+		}
+
+		section p {
+			margin: 0 0 1rem;
+		}
+
+		section p:last-child {
+			margin-bottom: 0;
+		}
+
+		section ul {
+			margin: 0 0 1rem;
+			padding-left: 1.25rem;
+		}
+	</style>
+
+	<div class="container">
+		<Content />
+
+	</div>
+</Layout>
